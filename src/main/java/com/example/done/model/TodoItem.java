@@ -4,6 +4,7 @@ package com.example.done.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 public class TodoItem {
@@ -14,13 +15,23 @@ public class TodoItem {
     private String name;
     private boolean isDone;
 
+    private Integer userId;
+
     public TodoItem() {}
-    public TodoItem(Long id, String name, boolean isDone) {
+    public TodoItem(Long id, String name, boolean isDone, Integer userId) {
         this.id = id;
         this.name = name;
         this.isDone = isDone;
+        this.userId = userId;
     }
 
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
     public Long getId() {
         return id;
