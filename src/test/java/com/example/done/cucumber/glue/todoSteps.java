@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration // Don't ask
 public class todoSteps extends SpringIntegrationTest {
 
-    @MockBean
     @Autowired
     private TodoRepo todoRepo;
 
