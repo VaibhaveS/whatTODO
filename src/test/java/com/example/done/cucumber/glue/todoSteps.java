@@ -55,7 +55,7 @@ public class todoSteps extends SpringIntegrationTest {
     @When("I fire a GET request to fetch all tasks of a particular user {int}")
     public void fireGetTasksUser(int userid) {
         response = restTemplate
-                .exchange("http://localhost:8080/todo/1", HttpMethod.GET, null, String.class);
+                .exchange("http://localhost:8080/todo/" + Integer.toString(userid), HttpMethod.GET, null, String.class);
     }
 
 }
