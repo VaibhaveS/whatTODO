@@ -1,10 +1,10 @@
 package com.example.done.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 public class TodoItem {
@@ -14,7 +14,6 @@ public class TodoItem {
     private Long id;
     private String name;
     private boolean isDone;
-
     private Integer userId;
 
     public TodoItem() {}
