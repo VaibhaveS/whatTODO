@@ -8,8 +8,6 @@ public class TodoProcessor implements ItemProcessor<TodoItem, TodoItem> {
 
     @Override
     public TodoItem process(TodoItem todoItem) throws Exception {
-
         return todoItem;
-
     }
 }

@@ -29,7 +29,6 @@ public class TodoController {
     @Autowired
     private Job job;
 
-
     @GetMapping
     public List<TodoDTO> findAll(){
         List<TodoItem> getResponse = todoService.findAll();

@@ -13,11 +13,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
+import javax.transaction.Transactional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ContextConfiguration // Don't ask
+@Transactional
 public class todoSteps extends SpringIntegrationTest {
 
     @Autowired
@@ -27,6 +30,8 @@ public class todoSteps extends SpringIntegrationTest {
     private TestRestTemplate restTemplate;
 
     private String caller; // input
+
+    private Boolean prevStatus;
 
     private ResponseEntity<String> response; // output
 
@@ -55,4 +60,26 @@ public class todoSteps extends SpringIntegrationTest {
                 .exchange("http://localhost:8080/todo/" + Integer.toString(userid), HttpMethod.GET, null, String.class);
     }
 
+    @When("I fire a PUT request to update a task with id {int} to assign to user with id {int}")
+    public void firePutAssignUser(int taskid, int userid){
+        todoRepo.getById((long) taskid).setUserId(userid);
+    }
+
+    @Then("The given task with {int} must be assigned to user with {int}")
+    public void assertTaskAssigned(int taskid, int userid){
+        assert todoRepo.getById((long) taskid).getUserId() == userid;
+    }
+
+    @When("I fire a PUT request to update a task with id to toggle task status {int}")
+    public void firePutStatusUpd(int taskid) {
+        TodoItem todoItem = todoRepo.getById((long) taskid);
+        prevStatus = todoItem.isDone();
+        todoItem.setDone(!todoItem.isDone());
+    }
+
+
+    @Then("The given task with {int} must have updated status")
+    public void assertToggleStatus(int taskid) {
+        assert todoRepo.getById((long) taskid).isDone() == !(prevStatus);
+    }
 }

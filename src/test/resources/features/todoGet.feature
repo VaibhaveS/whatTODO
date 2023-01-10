@@ -1,8 +1,8 @@
 Feature: Get feature
 
-  blah blah blah
+  All GET operations
 
-  Scenario Outline: blah
+  Scenario Outline: fetch all tasks
     Given I populate tasks
     When I fire a GET request to fetch all tasks
     Then I should get a response with HTTP status code <status>
@@ -11,7 +11,7 @@ Feature: Get feature
       |  200   |
 
 
-  Scenario Outline: blah
+  Scenario Outline: fetch tasks assign to user with id
     Given I populate tasks
     When I fire a GET request to fetch all tasks of a particular user <userId>
     Then I should get a response with HTTP status code <status>

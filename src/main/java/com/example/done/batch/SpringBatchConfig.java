@@ -24,15 +24,11 @@ import org.springframework.core.task.TaskExecutor;
 @AllArgsConstructor
 public class SpringBatchConfig {
 
-
     private TodoRepo todoRepo;
-
 
     private JobBuilderFactory jobBuilderFactory;
 
     private StepBuilderFactory stepBuilderFactory;
-
-
 
     @Bean
     public FlatFileItemReader<TodoItem> reader() {
