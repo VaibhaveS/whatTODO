@@ -16,4 +16,7 @@ public interface TodoRepo extends JpaRepository<TodoItem, Long >, JpaSpecificati
     List<TodoItem> findByUserId(Integer userId);
 
     TodoItem findTodoItemById(Long id);
+
+    TodoItem findTodoItemByName(String name);
+
 }

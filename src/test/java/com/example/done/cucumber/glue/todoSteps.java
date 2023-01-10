@@ -15,6 +15,10 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.transaction.Transactional;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -83,17 +87,24 @@ public class todoSteps extends SpringIntegrationTest {
         assert todoRepo.getById((long) taskid).isDone() == !(prevStatus);
     }
 
-    @Given("my csv file named <csvName> exists")
-    public void myCsvFileNamedCsvNameExists() {
-        
+    @Given("my csv file named {string} exists")
+    public void myCsvFileNamedCsvNameExists(String name) {
+        File f = new File("src/main/resources/"+name);
+
     }
 
     @When("I fire a PUT request to populate tasks from CSV")
-    public void iFireAPUTRequestToPopulateTasksFromCSV() {
+    public void firePutCSV() {
+        response = restTemplate
+                .exchange("http://localhost:8080/todo/batch", HttpMethod.POST, null, String.class);
         
     }
 
-    @Then("I should have all tasks from <csvName> in the repository")
-    public void iShouldHaveAllTasksFromCsvNameInTheRepository() {
+    @Then("I should have all tasks from {string} in the repository")
+    public void checkTasksFromCSV(String name) throws FileNotFoundException {
+
     }
 }
+
+
+
