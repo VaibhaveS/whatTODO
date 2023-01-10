@@ -9,6 +9,7 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -18,9 +19,16 @@ import java.util.List;
 @RequestMapping(value = "/todo")
 public class TodoController {
 
+
+    static int turn = 0;
+
     @Autowired
+    @Qualifier("serviceA")
     private TodoService todoService;
 
+    @Autowired
+    @Qualifier("serviceB")
+    private TodoService todoServiceB;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -37,9 +45,17 @@ public class TodoController {
 
     @PostMapping
     public TodoDTO save(@RequestBody TodoDTO todoDTO) throws Exception {
+
+        turn++;
         TodoItem todoItem = modelMapper.map(todoDTO, TodoItem.class);
-        TodoItem postResponse = todoService.save(todoItem);
+        if(turn%2 == 0) {
+            TodoItem postResponse = todoService.save(todoItem);
+            return modelMapper.map(postResponse, TodoDTO.class);
+        }
+
+        TodoItem postResponse = todoServiceB.save(todoItem);
         return modelMapper.map(postResponse, TodoDTO.class);
+
     }
 
     @PutMapping

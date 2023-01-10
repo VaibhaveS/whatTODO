@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class TodoService {
     @Autowired
-    private TodoRepo todoRepo;
+    protected TodoRepo todoRepo;
     private final RabbitTemplate rabbitTemplate;
     private final Receiver receiver;
 

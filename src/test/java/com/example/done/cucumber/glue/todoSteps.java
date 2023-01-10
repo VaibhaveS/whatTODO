@@ -82,4 +82,18 @@ public class todoSteps extends SpringIntegrationTest {
     public void assertToggleStatus(int taskid) {
         assert todoRepo.getById((long) taskid).isDone() == !(prevStatus);
     }
+
+    @Given("my csv file named <csvName> exists")
+    public void myCsvFileNamedCsvNameExists() {
+        
+    }
+
+    @When("I fire a PUT request to populate tasks from CSV")
+    public void iFireAPUTRequestToPopulateTasksFromCSV() {
+        
+    }
+
+    @Then("I should have all tasks from <csvName> in the repository")
+    public void iShouldHaveAllTasksFromCsvNameInTheRepository() {
+    }
 }
