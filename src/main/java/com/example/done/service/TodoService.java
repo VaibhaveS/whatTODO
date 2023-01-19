@@ -1,6 +1,7 @@
 package com.example.done.service;
 
-import com.example.done.model.TodoItem;
+import com.example.done.shard.TodoContextHolder;
+import com.example.done.shard.TodoType;
 import com.example.done.model.TodoItem;
 import com.example.done.queue.MessagingRabbitmqApplication;
 import com.example.done.queue.Receiver;
@@ -19,8 +20,20 @@ public class TodoService {
     private final RabbitTemplate rabbitTemplate;
     private final Receiver receiver;
 
+    public void setDB(Long TodoId) {
+        if(TodoId%2 == 1) {
+            TodoContextHolder.setCustomerType(TodoType.ODD);
+        } else {
+            TodoContextHolder.setCustomerType(TodoType.EVEN);
+        }
+    }
+
     public List<TodoItem> findAll() {
-        return todoRepo.findAll();
+        TodoContextHolder.setCustomerType(TodoType.ODD);
+        List<TodoItem> items = todoRepo.findAll();
+        TodoContextHolder.setCustomerType(TodoType.EVEN);
+        items.addAll(todoRepo.findAll());
+        return items;
     }
 
     public TodoService(Receiver receiver, RabbitTemplate rabbitTemplate) {
@@ -41,20 +54,27 @@ public class TodoService {
 
 
     public TodoItem update(TodoItem TodoItem){
+        setDB(TodoItem.getId());
         return todoRepo.save(TodoItem);
     }
 
     public void deleteById(Long id){
+        setDB(id);
         todoRepo.deleteById(id);
     }
 
     public TodoItem addTodoToUser(Long id, Integer userId){
+        setDB(id);
         TodoItem todoItem = todoRepo.findTodoItemById(id);
         todoItem.setUserId(userId);
         return todoRepo.save(todoItem);
     }
 
     public List<TodoItem> findByUserId(Integer userId){
-        return todoRepo.findByUserId(userId);
+        TodoContextHolder.setCustomerType(TodoType.ODD);
+        List<TodoItem> items = todoRepo.findByUser_id(userId);
+        TodoContextHolder.setCustomerType(TodoType.EVEN);
+        items.addAll(todoRepo.findByUser_id(userId));
+        return items;
     }
 }

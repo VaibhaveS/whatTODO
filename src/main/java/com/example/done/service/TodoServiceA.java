@@ -24,6 +24,7 @@ public class TodoServiceA extends TodoService{
 
     public TodoItem save(TodoItem TodoItem) throws Exception {
         sendMessage();
+        setDB(TodoItem.getId());
         System.out.println("Service A!!");
         return todoRepo.save(TodoItem);
     }

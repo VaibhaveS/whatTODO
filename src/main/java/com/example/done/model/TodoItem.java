@@ -2,34 +2,37 @@ package com.example.done.model;
 
 
 
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "todo_item")
 public class TodoItem {
 
     @Id
     @GeneratedValue
     private Long id;
     private String name;
-    private boolean isDone;
-    private Integer userId;
+    private boolean is_done;
+    private Integer user_id;
 
     public TodoItem() {}
     public TodoItem(Long id, String name, boolean isDone, Integer userId) {
         this.id = id;
         this.name = name;
-        this.isDone = isDone;
-        this.userId = userId;
+        this.is_done = isDone;
+        this.user_id = userId;
     }
 
     public Integer getUserId() {
-        return userId;
+        return user_id;
     }
 
     public void setUserId(Integer userId) {
-        this.userId = userId;
+        this.user_id = userId;
     }
 
     public Long getId() {
@@ -49,10 +52,10 @@ public class TodoItem {
     }
 
     public boolean isDone() {
-        return isDone;
+        return is_done;
     }
 
     public void setDone(boolean done) {
-        isDone = done;
+        is_done = done;
     }
 }

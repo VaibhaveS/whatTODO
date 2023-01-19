@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -99,11 +99,11 @@
 
 
 		<!-- https://mvnrepository.com/artifact/javax.persistence/persistence-api -->
-<!--		<dependency>-->
-<!--			<groupId>javax.persistence</groupId>-->
-<!--			<artifactId>persistence-api</artifactId>-->
-<!--			<version>1.0.2</version>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>javax.persistence</groupId>-->
+		<!--			<artifactId>persistence-api</artifactId>-->
+		<!--			<version>1.0.2</version>-->
+		<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.datanucleus</groupId>
@@ -114,11 +114,11 @@
 
 
 		<!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
-<!--		<dependency>-->
-<!--			<groupId>org.hibernate.orm</groupId>-->
-<!--			<artifactId>hibernate-core</artifactId>-->
-<!--			<version>6.2.0.CR1</version>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.hibernate.orm</groupId>-->
+		<!--			<artifactId>hibernate-core</artifactId>-->
+		<!--			<version>6.2.0.CR1</version>-->
+		<!--		</dependency>-->
 
 
 
