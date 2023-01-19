@@ -7,6 +7,6 @@ public class TodoRoutingDataSource extends AbstractRoutingDataSource {
 
     @Override
     protected Object determineCurrentLookupKey() {
-        return TodoContextHolder.getCustomerType();
+        return TodoContextHolder.getTodoType();
     }
 }

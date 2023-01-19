@@ -22,16 +22,16 @@ public class TodoService {
 
     public void setDB(Long TodoId) {
         if(TodoId%2 == 1) {
-            TodoContextHolder.setCustomerType(TodoType.ODD);
+            TodoContextHolder.setTodoType(TodoType.ODD);
         } else {
-            TodoContextHolder.setCustomerType(TodoType.EVEN);
+            TodoContextHolder.setTodoType(TodoType.EVEN);
         }
     }
 
     public List<TodoItem> findAll() {
-        TodoContextHolder.setCustomerType(TodoType.ODD);
+        TodoContextHolder.setTodoType(TodoType.ODD);
         List<TodoItem> items = todoRepo.findAll();
-        TodoContextHolder.setCustomerType(TodoType.EVEN);
+        TodoContextHolder.setTodoType(TodoType.EVEN);
         items.addAll(todoRepo.findAll());
         return items;
     }
@@ -71,9 +71,9 @@ public class TodoService {
     }
 
     public List<TodoItem> findByUserId(Integer userId){
-        TodoContextHolder.setCustomerType(TodoType.ODD);
+        TodoContextHolder.setTodoType(TodoType.ODD);
         List<TodoItem> items = todoRepo.findByUser_id(userId);
-        TodoContextHolder.setCustomerType(TodoType.EVEN);
+        TodoContextHolder.setTodoType(TodoType.EVEN);
         items.addAll(todoRepo.findByUser_id(userId));
         return items;
     }
