@@ -1,6 +1,8 @@
-package com.example.done.shard;
+package com.example.done.shards;
 
 import com.zaxxer.hikari.HikariDataSource;
+import liquibase.integration.spring.SpringLiquibase;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -34,10 +37,45 @@ public class TodoDBConfig {
     public DataSource oddDataSource() {
         return DataSourceBuilder.create().type(HikariDataSource.class).build();
     }
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.odd.datasource.liquibase")
+    public LiquibaseProperties primaryLiquibaseProperties() {
+        return new LiquibaseProperties();
+    }
+
+    @Bean
+    public SpringLiquibase primaryLiquibase() {
+        System.out.println("primary...");
+        return springLiquibase(oddDataSource(), primaryLiquibaseProperties());
+    }
+
+    private static SpringLiquibase springLiquibase(DataSource dataSource, LiquibaseProperties properties) {
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setDataSource(dataSource);
+        liquibase.setChangeLog("classpath:db.changelog/changelog-master.xml");
+        return liquibase;
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.even.datasource.liquibase")
+    public LiquibaseProperties secondaryLiquibaseProperties() {
+        return new LiquibaseProperties();
+    }
+    @Bean
+    public SpringLiquibase secondaryLiquibase() {
+        System.out.println("secondary...");
+        return springLiquibase(evenDataSource(), secondaryLiquibaseProperties());
+    }
+
     @Bean(name = "EvenDataSource")
     @ConfigurationProperties("spring.even.datasource")
     public DataSource evenDataSource() {
         return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    }
+
+    public List<TodoType> findAll() {
+        return List.of(TodoType.values());
     }
 
     @Bean(name = "multiRoutingDataSource")

@@ -1,4 +1,4 @@
-package com.example.done.shard;
+package com.example.done.shards;
 
 
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
