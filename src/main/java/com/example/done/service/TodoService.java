@@ -1,7 +1,7 @@
 package com.example.done.service;
 
-import com.example.done.shard.TodoContextHolder;
-import com.example.done.shard.TodoType;
+import com.example.done.shards.TodoContextHolder;
+import com.example.done.shards.TodoType;
 import com.example.done.model.TodoItem;
 import com.example.done.queue.MessagingRabbitmqApplication;
 import com.example.done.queue.Receiver;
