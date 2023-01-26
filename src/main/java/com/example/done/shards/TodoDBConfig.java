@@ -123,6 +123,7 @@ public class TodoDBConfig {
     }
     private Properties hibernateProperties() {
         Properties properties = new Properties();
+        properties.put("hibernate.id.new_generator_mappings", false);
         properties.put("hibernate.show_sql", true);
         properties.put("hibernate.format_sql", true);
         return properties;
