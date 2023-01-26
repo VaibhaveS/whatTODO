@@ -7,8 +7,8 @@
     https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
     <changeSet id="1"  author="vaibhaveS">
-        <addColumn tableName="todo_item">
-            <column name="priority" type="INT">
+        <addColumn tableName="shard">
+            <column name="context_key" type="VARCHAR(512)">
             </column>
         </addColumn>
     </changeSet>

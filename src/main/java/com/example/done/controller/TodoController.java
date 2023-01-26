@@ -22,13 +22,16 @@ public class TodoController {
 
     static int turn = 0;
 
-    @Autowired
-    @Qualifier("serviceA")
-    private TodoService todoService;
+//    @Autowired
+//    @Qualifier("serviceA")
+//    private TodoService todoService;
+//
+//    @Autowired
+//    @Qualifier("serviceB")
+//    private TodoService todoServiceB;
 
     @Autowired
-    @Qualifier("serviceB")
-    private TodoService todoServiceB;
+    private  TodoService todoService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -45,15 +48,9 @@ public class TodoController {
 
     @PostMapping
     public TodoDTO save(@RequestBody TodoDTO todoDTO) throws Exception {
-
         turn++;
         TodoItem todoItem = modelMapper.map(todoDTO, TodoItem.class);
-        if(turn%2 == 0) {
-            TodoItem postResponse = todoService.save(todoItem);
-            return modelMapper.map(postResponse, TodoDTO.class);
-        }
-
-        TodoItem postResponse = todoServiceB.save(todoItem);
+        TodoItem postResponse = todoService.save(todoItem);
         return modelMapper.map(postResponse, TodoDTO.class);
 
     }
@@ -91,6 +88,11 @@ public class TodoController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @PostMapping("/shard/{url}")
+    public void addShard(@PathVariable String url){
+        todoService.addShard("jdbc:mysql://localhost:3306/"+ url);
     }
 
 }

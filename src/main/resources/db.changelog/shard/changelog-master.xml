@@ -3,8 +3,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <include file="create-table-todo.xml" relativeToChangelogFile="true"/>
-
-    <include file="add-column-priority.xml" relativeToChangelogFile="true"/>
+    <include file="create-table-shard.xml" relativeToChangelogFile="true"/>
+    <include file="add-column-context-key.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

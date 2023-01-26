@@ -1,7 +1,11 @@
 package com.example.done.shards;
 
 import com.zaxxer.hikari.HikariDataSource;
+import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -17,6 +21,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,66 +40,62 @@ import java.util.Properties;
         transactionManagerRef = "multiTransactionManager"
 )
 public class TodoDBConfig {
+
     private final String PACKAGE_SCAN = "com.example.done";
+
+    private DataSource createDataSource(String username, String password, String url) {
+        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.username(username);
+        dataSourceBuilder.password(password);
+        dataSourceBuilder.url(url);
+        return dataSourceBuilder.build();
+    }
     @Primary
-    @Bean(name = "OddDataSource")
-    @ConfigurationProperties("spring.odd.datasource")
-    public DataSource oddDataSource() {
-        return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    @Bean(name = "PrimaryDataSource")
+    public DataSource primaryDataSource() {
+        return createDataSource("root", "rootroot", "jdbc:mysql://localhost:3306/shard");
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "spring.odd.datasource.liquibase")
+    @Primary
     public LiquibaseProperties primaryLiquibaseProperties() {
         return new LiquibaseProperties();
     }
-
-    @Bean
-    public SpringLiquibase primaryLiquibase() {
-        System.out.println("primary...");
-        return springLiquibase(oddDataSource(), primaryLiquibaseProperties());
-    }
-
-    private static SpringLiquibase springLiquibase(DataSource dataSource, LiquibaseProperties properties) {
+    private static SpringLiquibase springLiquibase(DataSource dataSource, String changelog, LiquibaseProperties properties) {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setDataSource(dataSource);
-        liquibase.setChangeLog("classpath:db.changelog/changelog-master.xml");
+        liquibase.setChangeLog(changelog);
         return liquibase;
     }
 
-    @Bean
-    @ConfigurationProperties(prefix = "spring.even.datasource.liquibase")
-    public LiquibaseProperties secondaryLiquibaseProperties() {
-        return new LiquibaseProperties();
-    }
-    @Bean
-    public SpringLiquibase secondaryLiquibase() {
-        System.out.println("secondary...");
-        return springLiquibase(evenDataSource(), secondaryLiquibaseProperties());
-    }
-
-    @Bean(name = "EvenDataSource")
-    @ConfigurationProperties("spring.even.datasource")
-    public DataSource evenDataSource() {
-        return DataSourceBuilder.create().type(HikariDataSource.class).build();
-    }
-
-    public List<TodoType> findAll() {
-        return List.of(TodoType.values());
-    }
-
     @Bean(name = "multiRoutingDataSource")
-    public DataSource multiRoutingDataSource() {
+    public DataSource multiRoutingDataSource() throws LiquibaseException {
+        Properties tenantProperties = new Properties();
+        File[] files = Paths.get("shardProp").toFile().listFiles();
         Map<Object, Object> targetDataSources = new HashMap<>();
-        targetDataSources.put(TodoType.ODD, oddDataSource());
-        targetDataSources.put(TodoType.EVEN, evenDataSource());
+        targetDataSources.put("primary", primaryDataSource());
         TodoRoutingDataSource multiRoutingDataSource = new TodoRoutingDataSource();
-        multiRoutingDataSource.setDefaultTargetDataSource(evenDataSource());
+        SpringLiquibase ls = springLiquibase(primaryDataSource(), "classpath:db.changelog/shard/changelog-master.xml", primaryLiquibaseProperties());
+        multiRoutingDataSource.setDefaultTargetDataSource(primaryDataSource());
+        ls.afterPropertiesSet();
+        int shardId = 1;
+        for(File propertyFile: files) {
+            try {
+                tenantProperties.load(new FileInputStream(propertyFile));
+                DataSource ds = createDataSource(tenantProperties.getProperty("datasource.username"), tenantProperties.getProperty("datasource.password"), tenantProperties.getProperty("datasource.url"));
+                targetDataSources.put("shard_"+ Integer.toString(shardId), ds);
+                SpringLiquibase Shardls = springLiquibase(ds, "classpath:db.changelog/changelog-master.xml", primaryLiquibaseProperties());
+                Shardls.afterPropertiesSet();
+                shardId++;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         multiRoutingDataSource.setTargetDataSources(targetDataSources);
         return multiRoutingDataSource;
     }
     @Bean(name = "multiEntityManager")
-    public LocalContainerEntityManagerFactoryBean multiEntityManager() {
+    public LocalContainerEntityManagerFactoryBean multiEntityManager() throws LiquibaseException {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(multiRoutingDataSource());
         em.setPackagesToScan(PACKAGE_SCAN);
@@ -99,7 +105,7 @@ public class TodoDBConfig {
         return em;
     }
     @Bean(name = "multiTransactionManager")
-    public PlatformTransactionManager multiTransactionManager() {
+    public PlatformTransactionManager multiTransactionManager() throws LiquibaseException {
         JpaTransactionManager transactionManager
                 = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(
@@ -108,7 +114,7 @@ public class TodoDBConfig {
     }
     @Primary
     @Bean(name = "dbSessionFactory")
-    public LocalSessionFactoryBean dbSessionFactory() {
+    public LocalSessionFactoryBean dbSessionFactory() throws LiquibaseException {
         LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
         sessionFactoryBean.setDataSource(multiRoutingDataSource());
         sessionFactoryBean.setPackagesToScan(PACKAGE_SCAN);

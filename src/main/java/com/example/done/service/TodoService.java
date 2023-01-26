@@ -1,7 +1,7 @@
 package com.example.done.service;
 
 import com.example.done.shards.TodoContextHolder;
-import com.example.done.shards.TodoType;
+
 import com.example.done.model.TodoItem;
 import com.example.done.queue.MessagingRabbitmqApplication;
 import com.example.done.queue.Receiver;
@@ -20,18 +20,27 @@ public class TodoService {
     private final RabbitTemplate rabbitTemplate;
     private final Receiver receiver;
 
+
     public void setDB(Long TodoId) {
-        if(TodoId%2 == 1) {
-            TodoContextHolder.setTodoType(TodoType.ODD);
+        System.out.println("setting context");
+        if(TodoId%3 == 0) {
+            System.out.println("shard 1");
+            TodoContextHolder.setTodoType("shard_1");
+        } else if (TodoId%3 == 1){
+            System.out.println("shard 2");
+            TodoContextHolder.setTodoType("shard_2");
         } else {
-            TodoContextHolder.setTodoType(TodoType.EVEN);
+            System.out.println("shard 3");
+            TodoContextHolder.setTodoType("shard_3");
         }
     }
 
     public List<TodoItem> findAll() {
-        TodoContextHolder.setTodoType(TodoType.ODD);
+        TodoContextHolder.setTodoType("shard_1");
         List<TodoItem> items = todoRepo.findAll();
-        TodoContextHolder.setTodoType(TodoType.EVEN);
+        TodoContextHolder.setTodoType("shard_2");
+        items.addAll(todoRepo.findAll());
+        TodoContextHolder.setTodoType("shard_3");
         items.addAll(todoRepo.findAll());
         return items;
     }
@@ -49,6 +58,8 @@ public class TodoService {
 
     public TodoItem save(TodoItem TodoItem) throws Exception {
         sendMessage();
+        System.out.println("resolving....");
+        setDB(TodoItem.getId());
         return todoRepo.save(TodoItem);
     }
 
@@ -71,10 +82,17 @@ public class TodoService {
     }
 
     public List<TodoItem> findByUserId(Integer userId){
-        TodoContextHolder.setTodoType(TodoType.ODD);
+        TodoContextHolder.setTodoType("shard_1");
         List<TodoItem> items = todoRepo.findByUser_id(userId);
-        TodoContextHolder.setTodoType(TodoType.EVEN);
+        TodoContextHolder.setTodoType("shard_2");
+        items.addAll(todoRepo.findByUser_id(userId));
+        TodoContextHolder.setTodoType("shard_3");
         items.addAll(todoRepo.findByUser_id(userId));
         return items;
     }
+
+    public void addShard(String url) {
+        System.out.println("Added a new shard..");
+    }
+
 }
